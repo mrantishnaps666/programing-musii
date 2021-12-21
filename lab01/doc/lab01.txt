@@ -1,0 +1,91 @@
+
+# Лабораторна робота #1. Вступ до програмування. Освоєння командної строки Linux 
+
+ **Завантажати Virtual Box**
+Я завантажив програму з офіційного сайту https://www.virtualbox.org/ та встановив на неї образ Linux 
+
+**Завантажати образ Linux**
+ Для того, щоб оновити у себе компоненти системи я прописав такі команди до команд-лайну: 
+
+    sudo apt-get update
+    sudo apt-get upgrade
+    sudo reboot
+    
+ **Інсталяція мінмально-потрібних пакетів** 
+За допомогою команди `apt-get package-name`  я інсталював собі такі пакети:
+*git, gcc, clang, clang-format, clang-tidy, tree, make, cppcheck*.
+
+**Клонування git репозиторію**
+Вводимо `git clone https://github.com/davydov-vyacheslav/sample_project.git`, команду, яка копює собі локально код, наданий викладачем.
+
+**Утиліта tree**
+Ця утліта дозволяє нам переглянути ієрархично структуру документів. Файли подаються у "*деревоподібній структурі*".
+
+**Збірка проєкту**
+У склонованому каталозi за допомогою команди `ls` я перевірив наявність `Makefile`. 
+Я виконав команду `make clean prep compile check`, та за допомогою команди `tree` побачив новостворені бінарні файлі у каталозі `dist`.
+
+ **Вносимо зміни**
+У склонованому каталозi знаходимо файл `main.c` та за допогою `vim main.c` редагуємо його. Я вирішив сильно не змінювати код, аби не порушити роботу програми. 
+Перед `return 0` я дописав `printf("The program has just ended")`. 
+
+**Перегляд змін**
+Ще раз виконуємо `make clean prep compile check` та тепер запустивши `main.c` можна побачити, що у кінці виводиться рядок *The program has just ended*.
+
+ **Додаємо ціль all в Makefile**
+Дописуємо в Makefile нову ціль – `all`. Тепер за допомогою команди `make all` можна виконати ті самі команди, яки ми запускали раніше.
+Прибираємо з цілі `compile` команду `test.bin`. Тепер тестовий файл не створюватиметься.
+
+ **Дізнатися поточні версії програм**
+
+    clang --version
+
+> Ubuntu clang version 3.5-1ubuntu1 (trunk) (based on LLVM 3.5) Target:
+> x86_64-pc-linux-gnu Thread model: posix
+
+    make --version 
+
+> GNU Make 3.81 Copyright (C) 2006  Free Software Foundation, Inc. This
+> is free software; see the source for copying conditions. There is NO
+> warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+> PURPOSE. This program built for i386-apple-darwin11.3.0
+
+**Команда man**
+Ввівши до терміналу `man command-name` можна отримати довідку з використання команди, якщо ця довідка для неї взагалі існує.
+
+**Команда git diff**
+Вводимо команду, щоб побачити зміни у моїй локальній гілці порівняно з віддаленим репозиторієм:
+
+> **diff --git a/lab00/Makefile b/lab00/Makefile**
+> **index 088755f..e06451c 100644**
+> **--- a/lab00/Makefile**
+> **+++ b/lab00/Makefile**
+> @@ -6,7 +6,7 @@ clean
+> rm -rf dist
+> prep:
+> mkdir dist
+> -compile: main.bin test.bin
+> +compile: main.bin
+> main.bin: src/main.c
+> $(CC) $(C_OPTS) $< -o ./dist/$@
+> @@ -21,5 +21,6 @@ doxygen:
+> check:
+> clang-format --verbose -dry-run --Werror src/* test/*
+> cppcheck --enable=all --inconclusive --addon=cert --error-exitcode=1 
+> -v --suppress=unreadVariable:*/main.c --suppress=knownConditionTrueFalse:*/main.c --suppress=missingIncludeSystem  --check-config --suppress=*:*/test.c  --suppress=unmatchedSuppression:*/main.c .
+> \-
+> \+all:
+> \+  clean prep compile check
+> \# TODO: clang-tidy; scan-build
+> **diff --git a/lab00/src/main.c b/lab00/src/main.c**
+> **index 53de7c1..5a52ffd 100644**
+> **--- a/lab00/src/main.c**
+> **+++ b/lab00/src/main.c**
+> @@ -44,6 +44,6 @@ int main()
+> generate_animal(&animals[i]);
+> }
+> show_animals(animals, ANIMAL_COUNT);
+> \-
+> \+  printf("The program has just ended");
+> return 0;
+> }
